@@ -1,28 +1,22 @@
+#
+# https://github.com/ckkashyap/nimsdl
+#
 import sdl2, unsigned
 {.pragma: rtl, exportc, dynlib}
 
 proc render*(rp: RendererPtr) {.rtl.}=
-    rp.setDrawColor 0,0,0,255
-    rp.clear
-    rp.setDrawColor 255,0,0,255
-    rp.drawPoint 100, 100
-    rp.drawPoint 100, 101
-    rp.drawPoint 100, 102
-    rp.drawPoint 100, 103
-    rp.drawPoint 100, 104
-    rp.drawPoint 100, 105
-
-    rp.setDrawColor 0,255,0,255
-    rp.drawPoint 101, 100
-    rp.drawPoint 101, 101
-    rp.drawPoint 101, 102
-    rp.drawPoint 101, 103
-    rp.drawPoint 101, 104
-    rp.drawPoint 101, 105
-
-    rp.setDrawColor 0,127,127,255
-    for i in 0..100:
-            for j in 0..100: 
-                    rp.drawPoint cast[cint](i*8),cast[cint](j*6) 
+    rp.setDrawColor 0,0,255,255
+    for x in 0..799:
+            for y in 0..599:
+                    rp.drawPoint cast[cint](x),cast[cint](y)
                     
-    rp.drawPoint 101, 105
+
+    rp.setDrawColor 255,255,255,255
+    for x in 200..300:
+            rp.drawPoint cast[cint](x),cast[cint](100)
+            rp.drawPoint cast[cint](x),cast[cint](200)
+    for y in 100..200:
+            rp.drawPoint cast[cint](200),cast[cint](y)
+            rp.drawPoint cast[cint](300),cast[cint](y)
+
+

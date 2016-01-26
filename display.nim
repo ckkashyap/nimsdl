@@ -20,9 +20,6 @@ var
 window = createWindow("Hello SDL2", 100, 100, 800,600, SDL_WINDOW_SHOWN)
 renderer = createRenderer(window, -1, Renderer_Accelerated or Renderer_PresentVsync or Renderer_TargetTexture)
 
-
-
-
 proc threadFunc(i: int) {.thread.}=
   var dllFileName="libdll.dylib"
   var lastWriteTime = getFileInfo(dllFileName).lastWriteTime
@@ -39,19 +36,13 @@ proc threadFunc(i: int) {.thread.}=
                     dll = loadLib(dllFileName)
             if dll != nil:
                     symbol = symAddr(dll, "render")
-
                     if symbol == nil:
                           echo "symbol not found"
-
                     renderFunc = cast[RenderFuncType](symbol)
             else:
                     echo "Could not load the library"
-
     release(lock)
     sleep (400)
-  
-  
-
 
 createThread(thread[0], threadFunc, 10)
 
@@ -81,7 +72,6 @@ while runGame:
     if evt.kind == QuitEvent:
       runGame = false
       break
-
   doDraw renderer
   renderer.present
 
