@@ -1,4 +1,4 @@
-import sdl2, dynlib, locks, net
+import sdl2, dynlib, locks, net, os, times
 
 
 var lock: Lock
@@ -21,23 +21,34 @@ window = createWindow("Hello SDL2", 100, 100, 800,600, SDL_WINDOW_SHOWN)
 renderer = createRenderer(window, -1, Renderer_Accelerated or Renderer_PresentVsync or Renderer_TargetTexture)
 
 
+
+
 proc threadFunc(i: int) {.thread.}=
-  acquire(lock)
-  var dll = loadLib("dll")
-
-  if dll == nil:
-        echo "Could not load library"
-        system.quit()
-
-
+  var dllFileName="libdll.dylib"
+  var lastWriteTime = getFileInfo(dllFileName).lastWriteTime
+  var dll = loadLib(dllFileName)
   var symbol = symAddr(dll, "render")
-
-  if symbol == nil:
-        echo "symbol not found"
-
-
   renderFunc = cast[RenderFuncType](symbol)
-  release(lock)
+  while true:
+    acquire(lock)
+    if lastWriteTime < getFileInfo(dllFileName).lastWriteTime:
+            lastWriteTime = getFileInfo(dllFileName).lastWriteTime
+            echo "Reloading library"
+            if dll != nil:
+                    unloadLib(dll)
+                    dll = loadLib(dllFileName)
+            if dll != nil:
+                    symbol = symAddr(dll, "render")
+
+                    if symbol == nil:
+                          echo "symbol not found"
+
+                    renderFunc = cast[RenderFuncType](symbol)
+            else:
+                    echo "Could not load the library"
+
+    release(lock)
+    sleep (400)
   
   
 
@@ -63,8 +74,6 @@ proc doDraw(r: RendererPtr) =
     r.setDrawColor 255,255,255,255
     r.drawPoint 100, 100
     once=false
-  else:
-    echo "done"
   release(lock)
 
 while runGame:
